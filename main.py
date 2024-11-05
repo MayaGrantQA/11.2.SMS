@@ -12,11 +12,14 @@ url = f"https://my3.webcom.mobi/sendsms.php?user={user}&pwd={password}&sadr={sen
 print(url)
 
 # Отправляем запрос
-response = requests.get(url)
-print(response.status_code)
+try:
+    response = requests.get(url)
+    print(response.status_code)
 
-# Выводим результат
-if response.status_code == 200:
-    print("Сообщение успешно отправлено")
-else:
-    print("Ошибка при отправке сообщения", response.status_code)
+    # Выводим результат
+    if response.status_code == 200:
+        print("Сообщение успешно отправлено")
+    else:
+        print("Ошибка при отправке сообщения", response.status_code)
+except Exception as e:
+    print(f"Произошла непредвиденная ошибка: {e}")
