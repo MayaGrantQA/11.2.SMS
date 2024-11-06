@@ -42,7 +42,11 @@ def send_sms():
     password = 'TCMS9L'
     sender = 'python2024'
     receiver = receiver_entry.get()
-    text = text_entry.get()
+    text = text_entry.get(1.0, END)
+
+    if len(text) > 160:
+        mb.showerror("Ошибка", "Текст SMS не может превышать 160 символов")
+        return
 
     # Проверяем баланс перед отправкой SMS
     balance = check_balance(user, password)
@@ -70,7 +74,7 @@ def send_sms():
 # Создаем окно tkinter
 window = Tk()
 window.title("Отправка SMS")
-window.geometry("260x110")
+window.geometry("400x200")
 
 # Создаем и размещаем виджеты
 Label(text="Номер получателя в формате 79*********: ").pack()
@@ -78,7 +82,7 @@ receiver_entry = Entry()
 receiver_entry.pack()
 
 Label(text="Введите текст SMS: ").pack()
-text_entry = Entry()
+text_entry = Text(height=6, width=30)
 text_entry.pack()
 
 send_button = Button(text="Отправить SMS", command=send_sms)
