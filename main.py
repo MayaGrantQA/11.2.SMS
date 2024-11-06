@@ -70,6 +70,11 @@ def send_sms():
     else:
         mb.showerror("Ошибка", "Не удалось получить информацию о балансе")
 
+# Функция для обновления метки с количеством символов
+def update_character_count(event):
+    text = text_entry.get(1.0, END)
+    character_count_label.config(text=f"Количество символов: {len(text)}/160")
+
 
 # Создаем окно tkinter
 window = Tk()
@@ -81,9 +86,13 @@ Label(text="Номер получателя в формате 79*********: ").pa
 receiver_entry = Entry()
 receiver_entry.pack()
 
-Label(text="Введите текст SMS: ").pack()
+Label(text="Текст SMS (макс. 160 символов):").pack()
 text_entry = Text(height=6, width=30)
 text_entry.pack()
+text_entry.bind("<KeyRelease>", update_character_count)  # Обновляем счетчик при вводе
+
+character_count_label = Label(text="Количество символов: 0/160")
+character_count_label.pack()
 
 send_button = Button(text="Отправить SMS", command=send_sms)
 send_button.pack()
