@@ -1,6 +1,8 @@
 import requests
 import re  # Импортируем модуль для работы с регулярными выражениями
 import json
+from tkinter import *
+from tkinter import messagebox as mb
 
 
 # Функция для проверки баланса
@@ -20,10 +22,10 @@ def check_balance(login, password):
             response_data = response.json()
             return response_data['money']
         else:
-            print(f"Произошла ошибка при выполнении запроса: {response.status_code}")
+            mb.showerror("Ошибка!", f"Произошла ошибка проверки баланса: {response.status_code}")
             return None
     except Exception as e:
-        print(f"Произошла ошибка {e}")
+        mb.showerror("Ошибка!", f"Произошла ошибка при проверке баланса: {e}")
 
 
 # Функция для поверки правильности номера телефона
@@ -33,33 +35,52 @@ def validate_phone_number(phone_number):
     return bool(re.match(pattern, phone_number))  # Возвращает true или false
 
 
-# Замените следующие значения на ваши данные
-user = 'python24'
-password = 'TCMS9L'
-sender = 'python2024'
-receiver = '79163439281'
-text = 'Привет, Мир!'
+def send_sms():
+    # Замените следующие значения на ваши данные
+    user = 'python24'
+    password = 'TCMS9L'
+    sender = 'python2024'
+    receiver = receiver_entry.get()
+    text = text_entry.get()
 
-# Проверяем баланс перед отправкой SMS
-balance = check_balance(user, password)
-if balance:
-    print(f"Баланс: {balance} руб.")
-    # Если баланс достаточен, отправляем SMS
-    if float(balance) > 10:  # Предположим, что SMS стоит 10 рублей
-        if not validate_phone_number(receiver):
-            print("Ошибка, некорректный номер телефона")
+    # Проверяем баланс перед отправкой SMS
+    balance = check_balance(user, password)
+    if balance:
+        if float(balance) > 10:  # Предположим, что SMS стоит 10 рублей
+            if not validate_phone_number(receiver):
+                mb.showerror("Ошибка!", "Некорректный номер телефона.")
+            else:
+                url = (f"https://my3.webcom.mobi/sendsms.php?user={user}&pwd={password}&sadr={sender}"
+                       f"&dadr={receiver}&text={text}")
+                try:
+                    response = requests.get(url)
+                    if response.status_code == 200:
+                        mb.showinfo("Ура!", "Сообщение успешно отправлено!")
+                    else:
+                        mb.showerror("Ошибка", f"Ошибка при отправке сообщения: {response.status_code}")
+                except Exception as e:
+                    mb.showerror("Ошибка", f"Произошла ошибка при отправке SMS: {e}")
         else:
-            url = f"https://my3.webcom.mobi/sendsms.php?user={user}&pwd={password}&sadr={sender}&dadr={receiver}&text={text}"
-            try:
-                response = requests.get(url)
-                print(response)
-                if response.status_code == 200:
-                    print("Сообщение успешно отправлено")
-                else:
-                    print(f"Ошибка при отправке сообщения: {response.status_code}")
-            except Exception as e:
-                print(f"Произошла ошибка при отправке SMS: {e}")
+            mb.showerror("Ошибка", "Недостаточно средств для отправки SMS")
     else:
-        print("Недостаточно средств для отправки SMS")
-else:
-    print("Не удалось получить информацию о балансе")
+        mb.showerror("Ошибка", "Не удалось получить информацию о балансе")
+
+
+# Создаем окно tkinter
+window = Tk()
+window.title("Отправка SMS")
+window.geometry("250x110")
+
+# Создаем и размещаем виджеты
+Label(text="Номер получателя: ").pack()
+receiver_entry = Entry()
+receiver_entry.pack()
+
+Label(text="Введите текст SMS: ").pack()
+text_entry = Entry()
+text_entry.pack()
+
+send_button = Button(text="Отправить SMS", command=send_sms)
+send_button.pack()
+
+window.mainloop()
