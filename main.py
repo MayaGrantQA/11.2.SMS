@@ -20,6 +20,7 @@ def check_balance(login, password):
         # Проверяем успешность запроса и обрабатываем ответ
         if response.status_code == 200:
             response_data = response.json()
+            mb.showinfo("Баланс", f'Баланс счёта {response_data['money']} руб.')
             return response_data['money']
         else:
             mb.showerror("Ошибка!", f"Произошла ошибка проверки баланса: {response.status_code}")
@@ -69,10 +70,10 @@ def send_sms():
 # Создаем окно tkinter
 window = Tk()
 window.title("Отправка SMS")
-window.geometry("250x110")
+window.geometry("260x110")
 
 # Создаем и размещаем виджеты
-Label(text="Номер получателя: ").pack()
+Label(text="Номер получателя в формате 79*********: ").pack()
 receiver_entry = Entry()
 receiver_entry.pack()
 
